@@ -17,6 +17,9 @@ from trainer.offline_trainer import OfflineTrainer
 from trainer.online_trainer import OnlineTrainer
 from common.logger import Logger
 
+from utils import load_model
+from trainer.dagger_trainer import DaggerTrainer
+
 torch.backends.cudnn.benchmark = True
 
 
@@ -51,6 +54,26 @@ def train(cfg: dict):
 		cfg=cfg,
 		env=make_env(cfg),
 		agent=TDMPC2(cfg),
+		buffer=Buffer(cfg),
+		logger=Logger(cfg),
+	)
+	trainer.train()
+	print('\nTraining completed successfully')
+
+
+# cfg:
+#   - base_model_path: A pickle path to the model we're starting from.
+def train_dagger(cfg: dict):
+	assert torch.cuda.is_available()
+	set_seed(100)
+
+	agent = load_model(cfg.base_model_path)
+
+	# not sure if this actually works
+	trainer = DaggerTrainer(
+		cfg=cfg,
+		env=make_env(cfg),
+		agent=agent,
 		buffer=Buffer(cfg),
 		logger=Logger(cfg),
 	)
