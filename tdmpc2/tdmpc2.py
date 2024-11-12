@@ -86,7 +86,7 @@ class TDMPC2(torch.nn.Module):
 		self.model.load_state_dict(state_dict["model"])
 
 	@torch.no_grad()
-	def act(self, obs, t0=False, eval_mode=False, task=None):
+	def act(self, obs: torch.Tensor, t0: bool = False, eval_mode: bool = False, task: int | None = None):
 		"""
 		Select an action by planning in the latent space of the world model.
 

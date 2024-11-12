@@ -52,7 +52,7 @@ def make_multitask_env(cfg):
 	return env
 	
 
-def make_env(cfg):
+def make_env(cfg) -> PixelWrapper | MultitaskWrapper | TensorWrapper:
 	"""
 	Make an environment for TD-MPC2 experiments.
 	"""

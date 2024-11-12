@@ -2,6 +2,7 @@ from copy import deepcopy
 
 import torch
 import torch.nn as nn
+from torch import Tensor
 
 from common import layers, math, init
 from tensordict.nn import TensorDictParams
@@ -77,7 +78,7 @@ class WorldModel(nn.Module):
 		"""
 		self._target_Qs_params.lerp_(self._detach_Qs_params, self.cfg.tau)
 
-	def task_emb(self, x, task):
+	def task_emb(self, x: Tensor, task: int) -> Tensor:
 		"""
 		Continuous task embedding for multi-task experiments.
 		Retrieves the task embedding for a given task ID `task`
@@ -92,7 +93,7 @@ class WorldModel(nn.Module):
 			emb = emb.repeat(x.shape[0], 1)
 		return torch.cat([x, emb], dim=-1)
 
-	def encode(self, obs, task):
+	def encode(self, obs: Tensor, task: int | None) -> Tensor:
 		"""
 		Encodes an observation into its latent representation.
 		This implementation assumes a single state-based observation.
@@ -121,7 +122,7 @@ class WorldModel(nn.Module):
 		z = torch.cat([z, a], dim=-1)
 		return self._reward(z)
 
-	def pi(self, z, task):
+	def pi(self, z: Tensor, task: int | None):
 		"""
 		Samples an action from the policy prior.
 		The policy prior is a Gaussian distribution with
