@@ -19,7 +19,7 @@ from trainer.offline_trainer import OfflineTrainer
 from trainer.online_trainer import OnlineTrainer
 from common.logger import Logger
 
-from utils import load_model
+from .utils import load_model
 from trainer.dagger_trainer import DaggerTrainer
 
 torch.backends.cudnn.benchmark = True

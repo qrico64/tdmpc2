@@ -65,7 +65,7 @@ class Buffer():
 			LazyTensorStorage(self._capacity, device=self._storage_device)
 		)
 
-	def _prepare_batch(self, td):
+	def _prepare_batch(self, td: TensorDict):
 		"""
 		Prepare a sampled batch for training (post-processing).
 		Expects `td` to be a TensorDict with batch size TxB.
@@ -90,5 +90,5 @@ class Buffer():
 
 	def sample(self):
 		"""Sample a batch of subsequences from the buffer."""
-		td = self._buffer.sample().view(-1, self.cfg.horizon+1).permute(1, 0)
+		td: TensorDict = self._buffer.sample().view(-1, self.cfg.horizon+1).permute(1, 0)
 		return self._prepare_batch(td)

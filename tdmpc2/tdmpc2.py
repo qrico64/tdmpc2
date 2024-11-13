@@ -1,9 +1,11 @@
 import torch
 import torch.nn.functional as F
+from torch import Tensor
 
 from common import math
 from common.scale import RunningScale
 from common.world_model import WorldModel
+from common.buffer import Buffer
 from tensordict import TensorDict
 
 
@@ -218,7 +220,7 @@ class TDMPC2(torch.nn.Module):
 		return pi_loss.detach(), pi_grad_norm
 
 	@torch.no_grad()
-	def _td_target(self, next_z, reward, task):
+	def _td_target(self, next_z: Tensor, reward: Tensor, task):
 		"""
 		Compute the TD-target from a reward and the observation at the following time step.
 
@@ -234,7 +236,7 @@ class TDMPC2(torch.nn.Module):
 		discount = self.discount[task].unsqueeze(-1) if self.cfg.multitask else self.discount
 		return reward + discount * self.model.Q(next_z, pi, task, return_type='min', target=True)
 
-	def _update(self, obs, action, reward, task=None):
+	def _update(self, obs: Tensor, action: Tensor, reward: Tensor, task=None):
 		# Compute targets
 		with torch.no_grad():
 			next_z = self.model.encode(obs[1:], task)
@@ -299,7 +301,7 @@ class TDMPC2(torch.nn.Module):
 			"pi_scale": self.scale.value,
 		}).detach().mean()
 
-	def update(self, buffer):
+	def update(self, buffer: Buffer):
 		"""
 		Main update function. Corresponds to one iteration of model learning.
 

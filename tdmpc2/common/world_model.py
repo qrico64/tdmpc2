@@ -150,6 +150,10 @@ class WorldModel(nn.Module):
 
 		return mu, pi, log_pi, log_std
 
+	def log_prob(self, z: Tensor, task: int | None, pi: Tensor) -> Tensor:
+		raise NotImplementedError("Need to implement.")
+		return torch.ones((z.shape[0],))
+
 	def Q(self, z, a, task, return_type='min', target=False, detach=False):
 		"""
 		Predict state-action value.
