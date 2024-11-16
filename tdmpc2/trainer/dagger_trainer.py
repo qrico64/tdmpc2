@@ -62,6 +62,7 @@ class DaggerTrainer(Trainer):
     # Assume there's already a well-trained world model loaded.
     for dagger_i in range(self.cfg.dagger_epochs):
       # Rollout student policy and label with expert action.
+      # Assume there's no buffer at the beginning.
       for traj_i in range(self.cfg.trajs_per_dagger_epoch):
         obs, done, t = self.env.reset(), False, 0
         while not done:
@@ -75,7 +76,7 @@ class DaggerTrainer(Trainer):
       for train_i in range(self.cfg.train_epochs):
         obs, expert_action, reward, task = self.buffer.sample()
         obs_z = self.agent.model.encode(obs, task) # I'm kind of perplexed in this respect. We're not adding task into buffer, so how is it getting task?
-        log_probs = self.agent.model.log_prob(obs_z, task, expert_action) # Need to implement this function.
+        log_probs = self.agent.model.log_prob(obs_z, task, expert_action) # Custom-implemented function.
         loss = -torch.mean(log_probs)
         self.agent.optim.zero_grad()
         loss.backward()

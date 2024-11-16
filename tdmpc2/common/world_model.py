@@ -151,8 +151,17 @@ class WorldModel(nn.Module):
 		return mu, pi, log_pi, log_std
 
 	def log_prob(self, z: Tensor, task: int | None, pi: Tensor) -> Tensor:
-		raise NotImplementedError("Need to implement.")
-		return torch.ones((z.shape[0],))
+		# This code is without multitasking.
+		mu, log_std = self._pi(z).chunk(2, dim=-1)
+		log_std = math.log_std(log_std, self.log_std_min, self.log_std_dif)
+		if torch.any(pi >= 1 or pi <= -1):
+			raise ValueError("pi exceeds domain of atanh.")
+		pi_beforetanh = torch.atanh(pi)
+		dist = torch.distributions.Normal(mu, torch.exp(log_std))
+
+		log_prob = dist.log_prob(pi_beforetanh)
+		log_prob -= math._squash(pi)
+		return log_prob
 
 	def Q(self, z, a, task, return_type='min', target=False, detach=False):
 		"""
